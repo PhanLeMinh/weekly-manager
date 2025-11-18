@@ -1,0 +1,129 @@
+@model WeeklyScheduleManagement.Models.DiaDiem
+
+@{
+    ViewData["Title"] = "Thêm Địa Điểm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="form-header mb-4">
+    <h2><i class="fas fa-plus-circle"></i> Thêm Địa Điểm Mới</h2>
+    <p class="text-muted">Nhập thông tin địa điểm làm việc</p>
+</div>
+
+<div class="form-container">
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <div class="mb-4">
+            <label asp-for="TenDiaDiem" class="form-label required-label">
+                <i class="fas fa-map-marker-alt"></i> Tên Địa Điểm
+            </label>
+            <input asp-for="TenDiaDiem" class="form-control" placeholder="VD: Phòng A101, Hội trường C..." required />
+            <span asp-validation-for="TenDiaDiem" class="text-danger"></span>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <label asp-for="LoaiDiaDiem" class="form-label">
+                    <i class="fas fa-tag"></i> Loại Địa Điểm
+                </label>
+                <select asp-for="LoaiDiaDiem" class="form-select">
+                    <option value="">-- Chọn loại --</option>
+                    <option value="PhongHoc">Phòng Học</option>
+                    <option value="HoiTruong">Hội Trường</option>
+                    <option value="PhongHop">Phòng Họp</option>
+                    <option value="Khac">Khác</option>
+                </select>
+                <span asp-validation-for="LoaiDiaDiem" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <label asp-for="SucChua" class="form-label">
+                    <i class="fas fa-users"></i> Sức Chứa (người)
+                </label>
+                <input asp-for="SucChua" type="number" class="form-control" placeholder="VD: 50" min="1" />
+                <span asp-validation-for="SucChua" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label asp-for="MoTa" class="form-label">
+                <i class="fas fa-align-left"></i> Mô Tả
+            </label>
+            <textarea asp-for="MoTa" class="form-control" rows="4" placeholder="Mô tả chi tiết về địa điểm..."></textarea>
+            <span asp-validation-for="MoTa" class="text-danger"></span>
+        </div>
+
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-submit">
+                <i class="fas fa-save"></i> Lưu Địa Điểm
+            </button>
+            <a asp-action="Index" class="btn btn-cancel ms-3">
+                <i class="fas fa-times"></i> Hủy
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+    .form-header {
+        text-align: center;
+        padding-bottom: 20px;
+        border-bottom: 3px solid #667eea;
+    }
+    .form-header h2 {
+        color: #667eea;
+        font-weight: bold;
+    }
+    .form-container {
+        background: #f8f9fa;
+        padding: 40px;
+        border-radius: 15px;
+    }
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 8px;
+    }
+    .required-label::after {
+        content: " *";
+        color: #dc3545;
+    }
+    .form-control, .form-select {
+        border-radius: 10px;
+        border: 2px solid #e0e0e0;
+        padding: 12px 15px;
+        transition: all 0.3s;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    .btn-submit {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 15px 50px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s;
+    }
+    .btn-submit:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+    .btn-cancel {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 15px 50px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    .btn-cancel:hover {
+        background: #5a6268;
+        color: white;
+    }
+</style>

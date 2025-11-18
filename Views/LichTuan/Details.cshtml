@@ -1,0 +1,243 @@
+@model WeeklyScheduleManagement.Models.LichTuan
+
+@{
+    ViewData["Title"] = "Chi Tiết Lịch Tuần";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="detail-header mb-4">
+    <h2><i class="fas fa-clipboard-list"></i> Chi Tiết Lịch Tuần</h2>
+    <p class="text-muted">Thông tin chi tiết về lịch tuần làm việc</p>
+</div>
+
+<div class="detail-card">
+    <div class="detail-section">
+        <h5 class="section-title"><i class="fas fa-info-circle"></i> Thông Tin Cơ Bản</h5>
+        
+        <div class="info-row">
+            <div class="info-label"><i class="fas fa-tag"></i> Tên Lịch:</div>
+            <div class="info-value">@Model.TenLichTuan</div>
+        </div>
+
+        <div class="info-row">
+            <div class="info-label"><i class="fas fa-align-left"></i> Nội Dung:</div>
+            <div class="info-value">@Model.NoiDung</div>
+        </div>
+
+        <div class="info-row">
+            <div class="info-label"><i class="fas fa-info-circle"></i> Trạng Thái:</div>
+            <div class="info-value">
+                @switch (Model.TrangThai)
+                {
+                    case "ChoDuyet":
+                        <span class="status-badge status-choduyet">
+                            <i class="fas fa-hourglass-half"></i> Chờ duyệt
+                        </span>
+                        break;
+                    case "DaDuyet":
+                        <span class="status-badge status-daduyet">
+                            <i class="fas fa-check-circle"></i> Đã duyệt
+                        </span>
+                        break;
+                    case "TuChoi":
+                        <span class="status-badge status-tuchoi">
+                            <i class="fas fa-times-circle"></i> Từ chối
+                        </span>
+                        break;
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="detail-section">
+        <h5 class="section-title"><i class="fas fa-clock"></i> Thời Gian</h5>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="info-row">
+                    <div class="info-label"><i class="fas fa-calendar-alt"></i> Ngày Bắt Đầu:</div>
+                    <div class="info-value">@Model.NgayBatDau.ToString("dd/MM/yyyy HH:mm")</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-row">
+                    <div class="info-label"><i class="fas fa-calendar-check"></i> Ngày Kết Thúc:</div>
+                    <div class="info-value">@Model.NgayKetThuc.ToString("dd/MM/yyyy HH:mm")</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="detail-section">
+        <h5 class="section-title"><i class="fas fa-users"></i> Người Liên Quan</h5>
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="info-row">
+                    <div class="info-label"><i class="fas fa-user"></i> Người Đăng Ký:</div>
+                    <div class="info-value">@Model.NguoiDangKy?.HoTen</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="info-row">
+                    <div class="info-label"><i class="fas fa-crown"></i> Người Chủ Trì:</div>
+                    <div class="info-value">@Model.ChuTri?.HoTen</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="info-row">
+                    <div class="info-label"><i class="fas fa-map-marker-alt"></i> Địa Điểm:</div>
+                    <div class="info-value">@Model.DiaDiem?.TenDiaDiem</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.TrangThai == "TuChoi" && !string.IsNullOrEmpty(Model.LyDoTuChoi))
+    {
+        <div class="detail-section alert-danger">
+            <h5 class="section-title text-danger"><i class="fas fa-exclamation-triangle"></i> Lý Do Từ Chối</h5>
+            <p class="mb-0">@Model.LyDoTuChoi</p>
+        </div>
+    }
+
+    @if (Model.TrangThai == "DaDuyet" && Model.NguoiDuyet != null)
+    {
+        <div class="detail-section">
+            <h5 class="section-title"><i class="fas fa-user-check"></i> Thông Tin Duyệt</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="info-row">
+                        <div class="info-label">Người Duyệt:</div>
+                        <div class="info-value">@Model.NguoiDuyet.HoTen</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-row">
+                        <div class="info-label">Ngày Duyệt:</div>
+                        <div class="info-value">@Model.NgayDuyet?.ToString("dd/MM/yyyy HH:mm")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (Model.ThanhPhanThamGias != null && Model.ThanhPhanThamGias.Any())
+    {
+        <div class="detail-section">
+            <h5 class="section-title"><i class="fas fa-user-friends"></i> Thành Phần Tham Gia (@Model.ThanhPhanThamGias.Count người)</h5>
+            
+            <div class="row">
+                @foreach (var tp in Model.ThanhPhanThamGias)
+                {
+                    <div class="col-md-6 mb-3">
+                        <div class="member-card">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>@tp.NguoiDung?.HoTen</strong>
+                                    <br>
+                                    <small class="text-muted">@tp.NguoiDung?.Email</small>
+                                </div>
+                                <span class="badge bg-primary">@tp.VaiTro</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<div class="text-center mt-4">
+    <a asp-action="Index" class="btn btn-back">
+        <i class="fas fa-arrow-left"></i> Quay lại danh sách
+    </a>
+    
+    @if (Model.TrangThai == "ChoDuyet")
+    {
+        <a asp-action="Edit" asp-route-id="@Model.MaLichTuan" class="btn btn-warning">
+            <i class="fas fa-edit"></i> Chỉnh sửa
+        </a>
+        
+        @if (User.IsInRole("Manager") || User.IsInRole("Admin"))
+        {
+            <a asp-action="Approve" asp-route-id="@Model.MaLichTuan" class="btn btn-success">
+                <i class="fas fa-check"></i> Duyệt lịch
+            </a>
+        }
+    }
+</div>
+
+<style>
+    .detail-header {
+        text-align: center;
+        padding-bottom: 20px;
+        border-bottom: 3px solid #667eea;
+    }
+    .detail-header h2 {
+        color: #667eea;
+        font-weight: bold;
+    }
+    .detail-card {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 30px;
+    }
+    .detail-section {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .section-title {
+        color: #667eea;
+        font-weight: 600;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e0e0e0;
+    }
+    .info-row {
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .info-row:last-child {
+        border-bottom: none;
+    }
+    .info-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 5px;
+    }
+    .info-value {
+        color: #212529;
+        font-size: 1.05rem;
+    }
+    .status-badge {
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-weight: 600;
+        display: inline-block;
+    }
+    .status-choduyet { background: #fff3cd; color: #856404; }
+    .status-daduyet { background: #d1e7dd; color: #0f5132; }
+    .status-tuchoi { background: #f8d7da; color: #842029; }
+    .member-card {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 10px;
+        border-left: 4px solid #667eea;
+    }
+    .btn-back {
+        background: #6c757d;
+        color: white;
+        padding: 12px 30px;
+        border-radius: 25px;
+        font-weight: 600;
+        text-decoration: none;
+    }
+    .btn-back:hover {
+        background: #5a6268;
+        color: white;
+    }
+</style>

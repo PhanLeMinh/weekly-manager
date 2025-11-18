@@ -1,0 +1,119 @@
+@model WeeklyScheduleManagement.Models.DiaDiem
+
+@{
+    ViewData["Title"] = "Chỉnh Sửa Địa Điểm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="form-header mb-4">
+    <h2><i class="fas fa-edit"></i> Chỉnh Sửa Địa Điểm</h2>
+    <p class="text-muted">Cập nhật thông tin địa điểm làm việc</p>
+</div>
+
+<div class="form-container">
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="MaDiaDiem" />
+        <input type="hidden" asp-for="NgayTao" />
+        
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <div class="mb-4">
+            <label asp-for="TenDiaDiem" class="form-label required-label">
+                <i class="fas fa-map-marker-alt"></i> Tên Địa Điểm
+            </label>
+            <input asp-for="TenDiaDiem" class="form-control" required />
+            <span asp-validation-for="TenDiaDiem" class="text-danger"></span>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <label asp-for="LoaiDiaDiem" class="form-label">
+                    <i class="fas fa-tag"></i> Loại Địa Điểm
+                </label>
+                <select asp-for="LoaiDiaDiem" class="form-select">
+                    <option value="">-- Chọn loại --</option>
+                    <option value="PhongHoc">Phòng Học</option>
+                    <option value="HoiTruong">Hội Trường</option>
+                    <option value="PhongHop">Phòng Họp</option>
+                    <option value="Khac">Khác</option>
+                </select>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <label asp-for="SucChua" class="form-label">
+                    <i class="fas fa-users"></i> Sức Chứa (người)
+                </label>
+                <input asp-for="SucChua" type="number" class="form-control" min="1" />
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label asp-for="MoTa" class="form-label">
+                <i class="fas fa-align-left"></i> Mô Tả
+            </label>
+            <textarea asp-for="MoTa" class="form-control" rows="4"></textarea>
+        </div>
+
+        <div class="mb-4">
+            <div class="form-check">
+                <input asp-for="TrangThai" class="form-check-input" type="checkbox" />
+                <label asp-for="TrangThai" class="form-check-label">
+                    Đang hoạt động
+                </label>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-submit">
+                <i class="fas fa-save"></i> Cập Nhật
+            </button>
+            <a asp-action="Index" class="btn btn-cancel ms-3">
+                <i class="fas fa-times"></i> Hủy
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+    .form-header {
+        text-align: center;
+        padding-bottom: 20px;
+        border-bottom: 3px solid #667eea;
+    }
+    .form-header h2 {
+        color: #667eea;
+        font-weight: bold;
+    }
+    .form-container {
+        background: #f8f9fa;
+        padding: 40px;
+        border-radius: 15px;
+    }
+    .required-label::after {
+        content: " *";
+        color: #dc3545;
+    }
+    .form-control, .form-select {
+        border-radius: 10px;
+        border: 2px solid #e0e0e0;
+        padding: 12px 15px;
+    }
+    .btn-submit {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 15px 50px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    .btn-cancel {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 15px 50px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+</style>

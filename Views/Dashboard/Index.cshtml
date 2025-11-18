@@ -1,0 +1,201 @@
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+        <p class="text-muted">Chào mừng @User.Identity.Name - Vai trò: <strong>@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</strong></p>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card stat-purple">
+            <div class="stat-icon">
+                <i class="fas fa-calendar-week"></i>
+            </div>
+            <div class="stat-info">
+                <h3>@ViewBag.TotalLichTuan</h3>
+                <p>Tổng Lịch Tuần</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card stat-warning">
+            <div class="stat-icon">
+                <i class="fas fa-hourglass-half"></i>
+            </div>
+            <div class="stat-info">
+                <h3>@ViewBag.LichChoDuyet</h3>
+                <p>Chờ Duyệt</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card stat-success">
+            <div class="stat-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-info">
+                <h3>@ViewBag.LichDaDuyet</h3>
+                <p>Đã Duyệt</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card stat-danger">
+            <div class="stat-icon">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <div class="stat-info">
+                <h3>@ViewBag.LichTuChoi</h3>
+                <p>Từ Chối</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-calendar-alt"></i> Lịch Sắp Diễn Ra (7 ngày tới)</h5>
+            </div>
+            <div class="card-body">
+                @if (ViewBag.UpcomingSchedules != null && ViewBag.UpcomingSchedules.Count > 0)
+                {
+                    <div class="list-group">
+                        @foreach (var item in ViewBag.UpcomingSchedules)
+                        {
+                            <a href="/LichTuan/Details/@item.MaLichTuan" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1"><i class="fas fa-clipboard-list text-primary"></i> @item.TenLichTuan</h6>
+                                        <p class="mb-1 text-muted small">
+                                            <i class="fas fa-user"></i> @item.NguoiDangKy?.HoTen | 
+                                            <i class="fas fa-map-marker-alt"></i> @item.DiaDiem?.TenDiaDiem
+                                        </p>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge bg-info">@item.NgayBatDau.ToString("dd/MM HH:mm")</span>
+                                    </div>
+                                </div>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-calendar-times fa-3x mb-3"></i>
+                        <p>Không có lịch sắp diễn ra</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> Thông Tin Hệ Thống</h5>
+            </div>
+            <div class="card-body">
+                <div class="info-item">
+                    <i class="fas fa-users text-primary"></i>
+                    <span>Tổng người dùng: <strong>@ViewBag.TotalUsers</strong></span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-map-marker-alt text-success"></i>
+                    <span>Tổng địa điểm: <strong>@ViewBag.TotalDiaDiem</strong></span>
+                </div>
+                <hr>
+                <div class="quick-actions">
+                    <h6 class="mb-3"><i class="fas fa-bolt"></i> Thao Tác Nhanh</h6>
+                    <a href="/LichTuan/Create" class="btn btn-primary btn-sm w-100 mb-2">
+                        <i class="fas fa-plus"></i> Đăng Ký Lịch Mới
+                    </a>
+                    <a href="/LichTuan/Index" class="btn btn-info btn-sm w-100 mb-2">
+                        <i class="fas fa-list"></i> Xem Danh Sách Lịch
+                    </a>
+                    @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                    {
+                        <a href="/DiaDiem/Index" class="btn btn-success btn-sm w-100">
+                            <i class="fas fa-map-marked-alt"></i> Quản Lý Địa Điểm
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .stat-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        transition: transform 0.3s;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+    .stat-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        color: white;
+    }
+    .stat-purple .stat-icon { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .stat-warning .stat-icon { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .stat-success .stat-icon { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .stat-danger .stat-icon { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+    .stat-info h3 {
+        font-size: 2rem;
+        font-weight: bold;
+        margin: 0;
+        color: #333;
+    }
+    .stat-info p {
+        margin: 0;
+        color: #666;
+        font-size: 0.9rem;
+    }
+    .card {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .card-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px 15px 0 0 !important;
+        padding: 15px 20px;
+    }
+    .card-header h5 {
+        margin: 0;
+        font-weight: 600;
+    }
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 0;
+    }
+    .info-item i {
+        font-size: 1.2rem;
+    }
+</style>

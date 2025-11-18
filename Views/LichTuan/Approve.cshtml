@@ -1,0 +1,253 @@
+@model WeeklyScheduleManagement.Models.LichTuan
+
+@{
+    ViewData["Title"] = "Duyệt Lịch Tuần";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="approve-header mb-4">
+    <h2><i class="fas fa-check-circle"></i> Duyệt Lịch Tuần</h2>
+    <p class="text-muted">Xem xét và phê duyệt lịch tuần làm việc</p>
+</div>
+
+<div class="approve-card">
+    <div class="schedule-info-section mb-4">
+        <h5 class="info-title"><i class="fas fa-clipboard-list"></i> Thông Tin Lịch Tuần</h5>
+        
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="label">Tên lịch:</span>
+                <span class="value">@Model.TenLichTuan</span>
+            </div>
+            
+            <div class="info-item">
+                <span class="label">Người đăng ký:</span>
+                <span class="value">@Model.NguoiDangKy?.HoTen</span>
+            </div>
+            
+            <div class="info-item">
+                <span class="label">Người chủ trì:</span>
+                <span class="value">@Model.ChuTri?.HoTen</span>
+            </div>
+            
+            <div class="info-item">
+                <span class="label">Địa điểm:</span>
+                <span class="value">@Model.DiaDiem?.TenDiaDiem</span>
+            </div>
+            
+            <div class="info-item">
+                <span class="label">Thời gian bắt đầu:</span>
+                <span class="value">@Model.NgayBatDau.ToString("dd/MM/yyyy HH:mm")</span>
+            </div>
+            
+            <div class="info-item">
+                <span class="label">Thời gian kết thúc:</span>
+                <span class="value">@Model.NgayKetThuc.ToString("dd/MM/yyyy HH:mm")</span>
+            </div>
+        </div>
+
+        <div class="content-section mt-4">
+            <span class="label">Nội dung:</span>
+            <p class="content-text">@Model.NoiDung</p>
+        </div>
+
+        @if (Model.ThanhPhanThamGias != null && Model.ThanhPhanThamGias.Any())
+        {
+            <div class="members-section mt-4">
+                <span class="label">Thành phần tham gia (@Model.ThanhPhanThamGias.Count người):</span>
+                <div class="members-list mt-2">
+                    @foreach (var tp in Model.ThanhPhanThamGias)
+                    {
+                        <div class="member-badge">
+                            <i class="fas fa-user"></i> @tp.NguoiDung?.HoTen <span class="role">(@tp.VaiTro)</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="action-section">
+        <h5 class="action-title"><i class="fas fa-tasks"></i> Phê Duyệt</h5>
+        
+        <div class="row g-3">
+            <div class="col-md-6">
+                <form asp-action="ApproveSchedule" method="post" onsubmit="return confirm('Bạn có chắc muốn DUYỆT lịch này?')">
+                    <input type="hidden" name="id" value="@Model.MaLichTuan" />
+                    <button type="submit" class="btn btn-approve w-100">
+                        <i class="fas fa-check-circle"></i> Duyệt Lịch
+                    </button>
+                </form>
+            </div>
+            
+            <div class="col-md-6">
+                <button type="button" class="btn btn-reject w-100" data-bs-toggle="modal" data-bs-target="#rejectModal">
+                    <i class="fas fa-times-circle"></i> Từ Chối
+                </button>
+            </div>
+        </div>
+
+        <div class="text-center mt-3">
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Từ Chối -->
+<div class="modal fade" id="rejectModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-exclamation-triangle"></i> Từ Chối Lịch Tuần</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="RejectSchedule" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="id" value="@Model.MaLichTuan" />
+                    
+                    <div class="alert alert-warning">
+                        <i class="fas fa-info-circle"></i> Vui lòng nhập lý do từ chối để người đăng ký biết và chỉnh sửa lại.
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="lyDoTuChoi" class="form-label"><strong>Lý do từ chối:</strong></label>
+                        <textarea name="lyDoTuChoi" id="lyDoTuChoi" class="form-control" rows="4" 
+                                  placeholder="VD: Địa điểm đã có lịch trùng, thời gian không phù hợp..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-times-circle"></i> Xác Nhận Từ Chối
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .approve-header {
+        text-align: center;
+        padding-bottom: 20px;
+        border-bottom: 3px solid #667eea;
+    }
+    .approve-header h2 {
+        color: #667eea;
+        font-weight: bold;
+    }
+    .approve-card {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 30px;
+    }
+    .schedule-info-section {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .info-title {
+        color: #667eea;
+        font-weight: 600;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e0e0e0;
+    }
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    .info-item .label {
+        font-weight: 600;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    .info-item .value {
+        color: #212529;
+        font-size: 1.1rem;
+    }
+    .content-section .label {
+        font-weight: 600;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    .content-text {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 10px;
+        border-left: 4px solid #667eea;
+    }
+    .members-section .label {
+        font-weight: 600;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    .members-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .member-badge {
+        background: #e7f3ff;
+        color: #0056b3;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    .member-badge .role {
+        color: #6c757d;
+        font-size: 0.85rem;
+    }
+    .action-section {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        margin-top: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .action-title {
+        color: #667eea;
+        font-weight: 600;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    .btn-approve {
+        background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
+        color: white;
+        border: none;
+        padding: 15px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s;
+    }
+    .btn-approve:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(0, 176, 155, 0.4);
+    }
+    .btn-reject {
+        background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+        color: white;
+        border: none;
+        padding: 15px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s;
+    }
+    .btn-reject:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(238, 9, 121, 0.4);
+    }
+</style>

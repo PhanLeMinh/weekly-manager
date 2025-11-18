@@ -1,0 +1,140 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using WeeklyScheduleManagement.Data;
+using WeeklyScheduleManagement.Models;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services
+builder.Services.AddControllersWithViews();
+
+// Cấu hình Database
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Cấu hình Authentication với Cookie
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+        options.ExpireTimeSpan = TimeSpan.FromHours(24);
+        options.SlidingExpiration = true;
+    });
+
+// Cấu hình Session
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+builder.Services.AddHttpContextAccessor();
+
+var app = builder.Build();
+
+// Seed dữ liệu mẫu
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        context.Database.EnsureCreated();
+
+        if (!context.NguoiDungs.Any())
+        {
+            Console.WriteLine("🌱 Bắt đầu thêm dữ liệu mẫu...");
+
+            // ⭐ THÊM VAI TRÒ TRƯỚC - QUAN TRỌNG!
+            var vaiTros = new[]
+            {
+                new VaiTro { MaVaiTro = 1, TenVaiTro = "Admin" },
+                new VaiTro { MaVaiTro = 2, TenVaiTro = "Manager" },
+                new VaiTro { MaVaiTro = 3, TenVaiTro = "GiaoVien" }
+            };
+            context.VaiTros.AddRange(vaiTros);
+            context.SaveChanges();
+            Console.WriteLine("✅ Đã thêm vai trò");
+            
+            // Thêm Khoa
+            var khoas = new[]
+            {
+                new Khoa { TenKhoa = "Khoa Công nghệ Thông tin", MoTa = "Khoa đào tạo về CNTT" },
+                new Khoa { TenKhoa = "Khoa Kinh tế", MoTa = "Khoa đào tạo về Kinh tế" }
+            };
+            context.Khoas.AddRange(khoas);
+            context.SaveChanges();
+
+            // Thêm Phòng Ban
+            var phongBans = new[]
+            {
+                new PhongBan { TenPhongBan = "Bộ môn Công nghệ Phần mềm", MaKhoa = khoas[0].MaKhoa, MoTa = "Bộ môn CNPM" },
+                new PhongBan { TenPhongBan = "Bộ môn Mạng máy tính", MaKhoa = khoas[0].MaKhoa, MoTa = "Bộ môn MMT" }
+            };
+            context.PhongBans.AddRange(phongBans);
+            context.SaveChanges();
+
+            // Thêm Người dùng (mật khẩu: 123456)
+            var nguoiDungs = new[]
+            {
+                new NguoiDung { HoTen = "Admin System", Email = "admin@university.edu.vn", MatKhau = "123456", SoDienThoai = "0900000001", MaPhongBan = phongBans[0].MaPhongBan, MaVaiTro = 1, TrangThai = true },
+                new NguoiDung { HoTen = "Nguyễn Văn Manager", Email = "manager@university.edu.vn", MatKhau = "123456", SoDienThoai = "0900000002", MaPhongBan = phongBans[0].MaPhongBan, MaVaiTro = 2, TrangThai = true },
+                new NguoiDung { HoTen = "Trần Thị Bình", Email = "giaovien1@university.edu.vn", MatKhau = "123456", SoDienThoai = "0901234567", MaPhongBan = phongBans[0].MaPhongBan, MaVaiTro = 3, TrangThai = true },
+                new NguoiDung { HoTen = "Lê Văn Công", Email = "giaovien2@university.edu.vn", MatKhau = "123456", SoDienThoai = "0901234568", MaPhongBan = phongBans[1].MaPhongBan, MaVaiTro = 3, TrangThai = true },
+                new NguoiDung { HoTen = "Phạm Thị Dung", Email = "giaovien3@university.edu.vn", MatKhau = "123456", SoDienThoai = "0901234569", MaPhongBan = phongBans[0].MaPhongBan, MaVaiTro = 3, TrangThai = true }
+            };
+            context.NguoiDungs.AddRange(nguoiDungs);
+            context.SaveChanges();
+
+            // Thêm Địa điểm
+            var diaDiems = new[]
+            {
+                new DiaDiem { TenDiaDiem = "Phòng A101", LoaiDiaDiem = "PhongHoc", SucChua = 50, MoTa = "Phòng học lý thuyết tầng 1" },
+                new DiaDiem { TenDiaDiem = "Phòng A201", LoaiDiaDiem = "PhongHoc", SucChua = 50, MoTa = "Phòng học lý thuyết tầng 2" },
+                new DiaDiem { TenDiaDiem = "Phòng B202", LoaiDiaDiem = "PhongHoc", SucChua = 40, MoTa = "Phòng thực hành máy tính" },
+                new DiaDiem { TenDiaDiem = "Hội trường C", LoaiDiaDiem = "HoiTruong", SucChua = 200, MoTa = "Hội trường lớn" },
+                new DiaDiem { TenDiaDiem = "Phòng họp 301", LoaiDiaDiem = "PhongHop", SucChua = 20, MoTa = "Phòng họp nhỏ" }
+            };
+            context.DiaDiems.AddRange(diaDiems);
+            context.SaveChanges();
+
+            Console.WriteLine("✅ Đã thêm dữ liệu mẫu thành công!");
+            Console.WriteLine("📧 Tài khoản test:");
+            Console.WriteLine("   Admin: admin@university.edu.vn / 123456");
+            Console.WriteLine("   Manager: manager@university.edu.vn / 123456");
+            Console.WriteLine("   Giáo viên: giaovien1@university.edu.vn / 123456");
+        }
+        else
+        {
+            Console.WriteLine("✅ Database đã có dữ liệu!");
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ Lỗi khi seed data: {ex.Message}");
+    }
+}
+
+// Configure middleware
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+
+app.UseStaticFiles();
+app.UseRouting();
+
+app.UseAuthentication(); // Thêm authentication
+app.UseAuthorization();
+
+app.UseSession();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Account}/{action=Login}/{id?}");
+
+app.Run();
