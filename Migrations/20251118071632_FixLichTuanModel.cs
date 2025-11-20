@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WeeklyScheduleManagement.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class FixLichTuanModel : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -126,7 +126,7 @@ namespace WeeklyScheduleManagement.Migrations
                     NgayBatDau = table.Column<DateTime>(type: "datetime2", nullable: false),
                     NgayKetThuc = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TrangThai = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LyDoTuChoi = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LyDoTuChoi = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     MaNguoiDuyet = table.Column<int>(type: "int", nullable: true),
                     NgayDuyet = table.Column<DateTime>(type: "datetime2", nullable: true),
                     NgayTao = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -140,7 +140,7 @@ namespace WeeklyScheduleManagement.Migrations
                         column: x => x.MaDiaDiem,
                         principalTable: "DiaDiems",
                         principalColumn: "MaDiaDiem",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_LichTuans_NguoiDungs_MaChuTri",
                         column: x => x.MaChuTri,
@@ -187,7 +187,7 @@ namespace WeeklyScheduleManagement.Migrations
                         column: x => x.MaNguoiDung,
                         principalTable: "NguoiDungs",
                         principalColumn: "MaNguoiDung",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.InsertData(

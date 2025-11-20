@@ -12,8 +12,8 @@ using WeeklyScheduleManagement.Data;
 namespace WeeklyScheduleManagement.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251116142100_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251118071632_FixLichTuanModel")]
+    partial class FixLichTuanModel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -92,7 +92,6 @@ namespace WeeklyScheduleManagement.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaLichTuan"));
 
                     b.Property<string>("LyDoTuChoi")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("MaChuTri")
@@ -299,7 +298,7 @@ namespace WeeklyScheduleManagement.Migrations
                     b.HasOne("WeeklyScheduleManagement.Models.DiaDiem", "DiaDiem")
                         .WithMany("LichTuans")
                         .HasForeignKey("MaDiaDiem")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("WeeklyScheduleManagement.Models.NguoiDung", "NguoiDangKy")
@@ -361,7 +360,7 @@ namespace WeeklyScheduleManagement.Migrations
                     b.HasOne("WeeklyScheduleManagement.Models.NguoiDung", "NguoiDung")
                         .WithMany("ThanhPhanThamGias")
                         .HasForeignKey("MaNguoiDung")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("LichTuan");

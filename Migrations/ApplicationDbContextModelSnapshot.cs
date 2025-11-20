@@ -89,7 +89,6 @@ namespace WeeklyScheduleManagement.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaLichTuan"));
 
                     b.Property<string>("LyDoTuChoi")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("MaChuTri")
@@ -296,7 +295,7 @@ namespace WeeklyScheduleManagement.Migrations
                     b.HasOne("WeeklyScheduleManagement.Models.DiaDiem", "DiaDiem")
                         .WithMany("LichTuans")
                         .HasForeignKey("MaDiaDiem")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("WeeklyScheduleManagement.Models.NguoiDung", "NguoiDangKy")
@@ -358,7 +357,7 @@ namespace WeeklyScheduleManagement.Migrations
                     b.HasOne("WeeklyScheduleManagement.Models.NguoiDung", "NguoiDung")
                         .WithMany("ThanhPhanThamGias")
                         .HasForeignKey("MaNguoiDung")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("LichTuan");

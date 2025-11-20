@@ -86,67 +86,109 @@ namespace WeeklyScheduleManagement.Controllers
         }
 
         // POST: LichTuan/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(LichTuan lichTuan, int[] thanhPhanIds, string[] vaiTros)
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Create(LichTuan lichTuan, int[] thanhPhanIds, string[] vaiTros)
+{
+    Console.WriteLine($"📝 Create POST: {lichTuan.TenLichTuan}");
+    Console.WriteLine($"📝 MaChuTri: {lichTuan.MaChuTri}");
+    Console.WriteLine($"📝 MaDiaDiem: {lichTuan.MaDiaDiem}");
+    Console.WriteLine($"📝 NgayBatDau: {lichTuan.NgayBatDau}");
+    Console.WriteLine($"📝 NgayKetThuc: {lichTuan.NgayKetThuc}");
+
+    // KIỂM TRA ModelState
+    if (!ModelState.IsValid)
+    {
+        Console.WriteLine("❌ ModelState INVALID:");
+        foreach (var modelState in ModelState.Values)
         {
-            Console.WriteLine($"📝 Create POST: {lichTuan.TenLichTuan}");
-
-            if (ModelState.IsValid)
+            foreach (var error in modelState.Errors)
             {
-                // Kiểm tra trùng lịch địa điểm
-                var conflictSchedule = await _context.LichTuans
-                    .Where(l => l.MaDiaDiem == lichTuan.MaDiaDiem
-                        && l.TrangThai != "TuChoi"
-                        && ((l.NgayBatDau <= lichTuan.NgayBatDau && l.NgayKetThuc >= lichTuan.NgayBatDau)
-                            || (l.NgayBatDau <= lichTuan.NgayKetThuc && l.NgayKetThuc >= lichTuan.NgayKetThuc)
-                            || (l.NgayBatDau >= lichTuan.NgayBatDau && l.NgayKetThuc <= lichTuan.NgayKetThuc)))
-                    .FirstOrDefaultAsync();
-
-                if (conflictSchedule != null)
-                {
-                    ModelState.AddModelError("MaDiaDiem", "Địa điểm đã có lịch trùng trong khoảng thời gian này!");
-                    LoadDropdownData();
-                    return View(lichTuan);
-                }
-
-                // Lấy user hiện tại
-                var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                lichTuan.MaNguoiDangKy = userId;
-                lichTuan.TrangThai = "ChoDuyet";
-                lichTuan.NgayTao = DateTime.Now;
-                lichTuan.NgayCapNhat = DateTime.Now;
-
-                _context.Add(lichTuan);
-                await _context.SaveChangesAsync();
-
-                Console.WriteLine($"✅ Đã lưu lịch ID: {lichTuan.MaLichTuan}");
-
-                // Thêm thành phần tham gia
-                if (thanhPhanIds != null && thanhPhanIds.Length > 0)
-                {
-                    for (int i = 0; i < thanhPhanIds.Length; i++)
-                    {
-                        var thanhPhan = new ThanhPhanThamGia
-                        {
-                            MaLichTuan = lichTuan.MaLichTuan,
-                            MaNguoiDung = thanhPhanIds[i],
-                            VaiTro = vaiTros != null && i < vaiTros.Length ? vaiTros[i] : "Tham gia",
-                            NgayTao = DateTime.Now
-                        };
-                        _context.ThanhPhanThamGias.Add(thanhPhan);
-                    }
-                    await _context.SaveChangesAsync();
-                }
-
-                TempData["SuccessMessage"] = "Đăng ký lịch tuần thành công! Chờ Manager duyệt.";
-                return RedirectToAction(nameof(Index));
+                Console.WriteLine($"   - {error.ErrorMessage}");
             }
+        }
+        LoadDropdownData();
+        return View(lichTuan);
+    }
 
-            Console.WriteLine("❌ ModelState invalid");
+    try
+    {
+        // Kiểm tra trùng lịch địa điểm
+        var conflictSchedule = await _context.LichTuans
+            .Where(l => l.MaDiaDiem == lichTuan.MaDiaDiem
+                && l.TrangThai != "TuChoi"
+                && ((l.NgayBatDau <= lichTuan.NgayBatDau && l.NgayKetThuc >= lichTuan.NgayBatDau)
+                    || (l.NgayBatDau <= lichTuan.NgayKetThuc && l.NgayKetThuc >= lichTuan.NgayKetThuc)
+                    || (l.NgayBatDau >= lichTuan.NgayBatDau && l.NgayKetThuc <= lichTuan.NgayKetThuc)))
+            .FirstOrDefaultAsync();
+
+        if (conflictSchedule != null)
+        {
+            ModelState.AddModelError("MaDiaDiem", "Địa điểm đã có lịch trùng trong khoảng thời gian này!");
             LoadDropdownData();
             return View(lichTuan);
         }
+
+        // Lấy user hiện tại
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+        
+        // Set các giá trị
+        lichTuan.MaNguoiDangKy = userId;
+        lichTuan.TrangThai = "ChoDuyet";
+        lichTuan.LyDoTuChoi = ""; // ĐẶT GIÁ TRỊ RỖNG thay vì null
+        lichTuan.NgayTao = DateTime.Now;
+        lichTuan.NgayCapNhat = DateTime.Now;
+        lichTuan.MaNguoiDuyet = null;
+        lichTuan.NgayDuyet = null;
+
+        Console.WriteLine("💾 Đang lưu lịch tuần...");
+        _context.Add(lichTuan);
+        await _context.SaveChangesAsync();
+
+        Console.WriteLine($"✅ Đã lưu lịch ID: {lichTuan.MaLichTuan}");
+
+        // Thêm thành phần tham gia
+        if (thanhPhanIds != null && thanhPhanIds.Length > 0)
+        {
+            Console.WriteLine($"👥 Đang thêm {thanhPhanIds.Length} thành viên...");
+            
+            for (int i = 0; i < thanhPhanIds.Length; i++)
+            {
+                if (thanhPhanIds[i] > 0) // Chỉ thêm nếu có chọn người dùng
+                {
+                    var thanhPhan = new ThanhPhanThamGia
+                    {
+                        MaLichTuan = lichTuan.MaLichTuan,
+                        MaNguoiDung = thanhPhanIds[i],
+                        VaiTro = vaiTros != null && i < vaiTros.Length ? vaiTros[i] : "Tham gia",
+                        GhiChu = "", // ĐẶT GIÁ TRỊ RỖNG
+                        NgayTao = DateTime.Now
+                    };
+                    _context.ThanhPhanThamGias.Add(thanhPhan);
+                }
+            }
+            await _context.SaveChangesAsync();
+            Console.WriteLine("✅ Đã thêm thành viên");
+        }
+
+        TempData["SuccessMessage"] = "Đăng ký lịch tuần thành công! Chờ Manager duyệt.";
+        return RedirectToAction(nameof(Index));
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ LỖI: {ex.Message}");
+        Console.WriteLine($"❌ Stack Trace: {ex.StackTrace}");
+        
+        if (ex.InnerException != null)
+        {
+            Console.WriteLine($"❌ Inner Exception: {ex.InnerException.Message}");
+        }
+        
+        ModelState.AddModelError("", $"Lỗi khi lưu: {ex.Message}");
+        LoadDropdownData();
+        return View(lichTuan);
+    }
+}
 
         // GET: LichTuan/Edit/5
         public async Task<IActionResult> Edit(int? id)

@@ -134,3 +134,4 @@ D:\ĐHBKĐN\KI_VII\LTDNT\WeeklyScheduleManagement\obj\Debug\net8.0\refint\Weekly
 D:\ĐHBKĐN\KI_VII\LTDNT\WeeklyScheduleManagement\obj\Debug\net8.0\WeeklyScheduleManagement.pdb
 D:\ĐHBKĐN\KI_VII\LTDNT\WeeklyScheduleManagement\obj\Debug\net8.0\WeeklyScheduleManagement.genruntimeconfig.cache
 D:\ĐHBKĐN\KI_VII\LTDNT\WeeklyScheduleManagement\obj\Debug\net8.0\ref\WeeklyScheduleManagement.dll
+D:\ĐHBKĐN\KI_VII\LTDNT\WeeklyScheduleManagement\obj\Debug\net8.0\WeeklyScheduleManagement.sourcelink.json

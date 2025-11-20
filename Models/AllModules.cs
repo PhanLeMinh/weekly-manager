@@ -137,72 +137,72 @@ namespace WeeklyScheduleManagement.Models
     }
 
     // ===== LỊCH TUẦN =====
-    public class LichTuan
-    {
-        [Key]
-        public int MaLichTuan { get; set; }
+public class LichTuan
+{
+    [Key]
+    public int MaLichTuan { get; set; }
 
-        [Required(ErrorMessage = "Tên lịch không được để trống")]
-        [Display(Name = "Tên Lịch")]
-        public string TenLichTuan { get; set; }
+    [Required(ErrorMessage = "Tên lịch không được để trống")]
+    [Display(Name = "Tên Lịch")]
+    public string TenLichTuan { get; set; }
 
-        [Display(Name = "Người Đăng Ký")]
-        public int MaNguoiDangKy { get; set; }
+    [Display(Name = "Người Đăng Ký")]
+    public int MaNguoiDangKy { get; set; }
 
-        [Display(Name = "Người Chủ Trì")]
-        public int MaChuTri { get; set; }
+    [Display(Name = "Người Chủ Trì")]
+    public int MaChuTri { get; set; }
 
-        [Display(Name = "Địa Điểm")]
-        public int MaDiaDiem { get; set; }
+    [Display(Name = "Địa Điểm")]
+    public int MaDiaDiem { get; set; }
 
-        [Required(ErrorMessage = "Nội dung không được để trống")]
-        [Display(Name = "Nội Dung")]
-        [DataType(DataType.MultilineText)]
-        public string NoiDung { get; set; }
+    [Required(ErrorMessage = "Nội dung không được để trống")]
+    [Display(Name = "Nội Dung")]
+    [DataType(DataType.MultilineText)]
+    public string NoiDung { get; set; }
 
-        [Required(ErrorMessage = "Ngày bắt đầu không được để trống")]
-        [Display(Name = "Ngày Bắt Đầu")]
-        [DataType(DataType.DateTime)]
-        public DateTime NgayBatDau { get; set; }
+    [Required(ErrorMessage = "Ngày bắt đầu không được để trống")]
+    [Display(Name = "Ngày Bắt Đầu")]
+    [DataType(DataType.DateTime)]
+    public DateTime NgayBatDau { get; set; }
 
-        [Required(ErrorMessage = "Ngày kết thúc không được để trống")]
-        [Display(Name = "Ngày Kết Thúc")]
-        [DataType(DataType.DateTime)]
-        public DateTime NgayKetThuc { get; set; }
+    [Required(ErrorMessage = "Ngày kết thúc không được để trống")]
+    [Display(Name = "Ngày Kết Thúc")]
+    [DataType(DataType.DateTime)]
+    public DateTime NgayKetThuc { get; set; }
 
-        [Display(Name = "Trạng Thái")]
-        public string TrangThai { get; set; } = "ChoDuyet"; // ChoDuyet, DaDuyet, TuChoi
+    [Display(Name = "Trạng Thái")]
+    public string TrangThai { get; set; } = "ChoDuyet";
 
-        [Display(Name = "Lý Do Từ Chối")]
-        [DataType(DataType.MultilineText)]
-        public string LyDoTuChoi { get; set; }
+    [Display(Name = "Lý Do Từ Chối")]
+    [DataType(DataType.MultilineText)]
+    public string? LyDoTuChoi { get; set; } // THÊM ? để cho phép null
 
-        [Display(Name = "Người Duyệt")]
-        public int? MaNguoiDuyet { get; set; }
+    [Display(Name = "Người Duyệt")]
+    public int? MaNguoiDuyet { get; set; }
 
-        [Display(Name = "Ngày Duyệt")]
-        public DateTime? NgayDuyet { get; set; }
+    [Display(Name = "Ngày Duyệt")]
+    public DateTime? NgayDuyet { get; set; }
 
-        [Display(Name = "Ngày Tạo")]
-        public DateTime NgayTao { get; set; } = DateTime.Now;
+    [Display(Name = "Ngày Tạo")]
+    public DateTime NgayTao { get; set; } = DateTime.Now;
 
-        [Display(Name = "Ngày Cập Nhật")]
-        public DateTime NgayCapNhat { get; set; } = DateTime.Now;
+    [Display(Name = "Ngày Cập Nhật")]
+    public DateTime NgayCapNhat { get; set; } = DateTime.Now;
 
-        [ForeignKey("MaNguoiDangKy")]
-        public virtual NguoiDung NguoiDangKy { get; set; }
+    [ForeignKey("MaNguoiDangKy")]
+    public virtual NguoiDung? NguoiDangKy { get; set; }
 
-        [ForeignKey("MaChuTri")]
-        public virtual NguoiDung ChuTri { get; set; }
+    [ForeignKey("MaChuTri")]
+    public virtual NguoiDung? ChuTri { get; set; }
 
-        [ForeignKey("MaDiaDiem")]
-        public virtual DiaDiem DiaDiem { get; set; }
+    [ForeignKey("MaDiaDiem")]
+    public virtual DiaDiem? DiaDiem { get; set; }
 
-        [ForeignKey("MaNguoiDuyet")]
-        public virtual NguoiDung NguoiDuyet { get; set; }
+    [ForeignKey("MaNguoiDuyet")]
+    public virtual NguoiDung? NguoiDuyet { get; set; }
 
-        public virtual ICollection<ThanhPhanThamGia> ThanhPhanThamGias { get; set; }
-    }
+    public virtual ICollection<ThanhPhanThamGia>? ThanhPhanThamGias { get; set; }
+}
 
     // ===== THÀNH PHẦN THAM GIA =====
     public class ThanhPhanThamGia

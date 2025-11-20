@@ -73,10 +73,12 @@
             border-radius: 20px;
             font-weight: 600;
             transition: all 0.3s;
+            cursor: pointer;
         }
         .btn-logout:hover {
             background: #c82333;
             transform: scale(1.05);
+            color: white;
         }
     </style>
 </head>
@@ -113,14 +115,15 @@
                 <div class="d-flex align-items-center gap-3">
                     <div class="user-info">
                         <div class="user-avatar">
-                            @User.Identity.Name?.Substring(0, 1).ToUpper()
+                            @(User.Identity?.Name?.Substring(0, 1).ToUpper() ?? "U")
                         </div>
                         <div>
-                            <small class="d-block" style="font-weight: 600;">@User.Identity.Name</small>
+                            <small class="d-block" style="font-weight: 600;">@User.Identity?.Name</small>
                             <small class="text-muted">@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</small>
                         </div>
                     </div>
-                    <form asp-controller="Account" asp-action="Logout" method="post">
+                    <form asp-controller="Account" asp-action="Logout" method="post" style="margin: 0;">
+                        @Html.AntiForgeryToken()
                         <button type="submit" class="btn-logout">
                             <i class="fas fa-sign-out-alt"></i> Đăng xuất
                         </button>

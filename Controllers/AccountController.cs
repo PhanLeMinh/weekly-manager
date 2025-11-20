@@ -134,19 +134,21 @@ namespace WeeklyScheduleManagement.Controllers
         }
 
         // POST: Account/Logout
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
-        {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            Console.WriteLine("✅ Đăng xuất thành công");
-            return RedirectToAction(nameof(Login));
-        }
-
-        // GET: Account/AccessDenied
-        public IActionResult AccessDenied()
-        {
-            return View();
-        }
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Logout()
+{
+    try
+    {
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        Console.WriteLine("✅ Đăng xuất thành công");
+        return RedirectToAction("Login", "Account");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ Lỗi đăng xuất: {ex.Message}");
+        return RedirectToAction("Login", "Account");
+    }
+}
     }
 }

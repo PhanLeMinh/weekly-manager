@@ -19,52 +19,54 @@ namespace WeeklyScheduleManagement.Data
         public DbSet<ThanhPhanThamGia> ThanhPhanThamGias { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
+{
+    base.OnModelCreating(modelBuilder);
 
-            // Cấu hình relationship cho LichTuan
-            modelBuilder.Entity<LichTuan>()
-                .HasOne(l => l.NguoiDangKy)
-                .WithMany(n => n.LichTuansDangKy)
-                .HasForeignKey(l => l.MaNguoiDangKy)
-                .OnDelete(DeleteBehavior.Restrict);
+    // Cấu hình relationship cho LichTuan
+    modelBuilder.Entity<LichTuan>()
+        .HasOne(l => l.NguoiDangKy)
+        .WithMany(n => n.LichTuansDangKy)
+        .HasForeignKey(l => l.MaNguoiDangKy)
+        .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<LichTuan>()
-                .HasOne(l => l.ChuTri)
-                .WithMany(n => n.LichTuansChuTri)
-                .HasForeignKey(l => l.MaChuTri)
-                .OnDelete(DeleteBehavior.Restrict);
+    modelBuilder.Entity<LichTuan>()
+        .HasOne(l => l.ChuTri)
+        .WithMany(n => n.LichTuansChuTri)
+        .HasForeignKey(l => l.MaChuTri)
+        .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<LichTuan>()
-                .HasOne(l => l.NguoiDuyet)
-                .WithMany()
-                .HasForeignKey(l => l.MaNguoiDuyet)
-                .OnDelete(DeleteBehavior.Restrict);
-            
-            modelBuilder.Entity<LichTuan>()
-                .HasOne(l => l.DiaDiem)
-                .WithMany(d => d.LichTuans)
-                .HasForeignKey(l => l.MaDiaDiem)
-                .OnDelete(DeleteBehavior.Restrict);
+    modelBuilder.Entity<LichTuan>()
+        .HasOne(l => l.NguoiDuyet)
+        .WithMany()
+        .HasForeignKey(l => l.MaNguoiDuyet)
+        .OnDelete(DeleteBehavior.Restrict);
+    
+    // ĐỔI THÀNH Restrict thay vì Cascade
+    modelBuilder.Entity<LichTuan>()
+        .HasOne(l => l.DiaDiem)
+        .WithMany(d => d.LichTuans)
+        .HasForeignKey(l => l.MaDiaDiem)
+        .OnDelete(DeleteBehavior.Restrict);
 
-            // Cấu hình ThanhPhanThamGia
-            modelBuilder.Entity<ThanhPhanThamGia>()
-                .HasOne(t => t.LichTuan)
-                .WithMany(l => l.ThanhPhanThamGias)
-                .HasForeignKey(t => t.MaLichTuan)
-                .OnDelete(DeleteBehavior.Cascade);
+    // Cấu hình ThanhPhanThamGia
+    modelBuilder.Entity<ThanhPhanThamGia>()
+        .HasOne(t => t.LichTuan)
+        .WithMany(l => l.ThanhPhanThamGias)
+        .HasForeignKey(t => t.MaLichTuan)
+        .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<ThanhPhanThamGia>()
-                .HasOne(t => t.NguoiDung)
-                .WithMany(n => n.ThanhPhanThamGias)
-                .HasForeignKey(t => t.MaNguoiDung)
-                .OnDelete(DeleteBehavior.Restrict);
-            // Seed data cho VaiTro
-            modelBuilder.Entity<VaiTro>().HasData(
-                new VaiTro { MaVaiTro = 1, TenVaiTro = "Admin" },
-                new VaiTro { MaVaiTro = 2, TenVaiTro = "Manager" },
-                new VaiTro { MaVaiTro = 3, TenVaiTro = "GiaoVien" }
-            );
-        }
+    modelBuilder.Entity<ThanhPhanThamGia>()
+        .HasOne(t => t.NguoiDung)
+        .WithMany(n => n.ThanhPhanThamGias)
+        .HasForeignKey(t => t.MaNguoiDung)
+        .OnDelete(DeleteBehavior.Restrict);
+        
+    // Seed data cho VaiTro
+    modelBuilder.Entity<VaiTro>().HasData(
+        new VaiTro { MaVaiTro = 1, TenVaiTro = "Admin" },
+        new VaiTro { MaVaiTro = 2, TenVaiTro = "Manager" },
+        new VaiTro { MaVaiTro = 3, TenVaiTro = "GiaoVien" }
+    );
+}
     }
 }
